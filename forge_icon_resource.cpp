@@ -83,12 +83,13 @@ public:
 
 int main(int argc, char* argv[])
 {
-	if(argc < 2)
+	if(argc < 3)
 	{
-		printf("Usage %s file.icns\n", argv[0]);
+		printf("Usage %s output_file file.icns\n", argv[0]);
 		return 1;
 	}
-	const char* fileName = argv[1];
+	const char* outFileName = argv[1];
+	const char* fileName = argv[2];
 	FILE* f = fopen(fileName, "r");
 	if(f == nullptr)
 	{
@@ -154,7 +155,7 @@ int main(int argc, char* argv[])
 	// Fixup the last one
 	resMap.seek(typeListToResListPos);
 	resMap.writeInt16(resListStartPos - typeListStartPos);
-	FILE* outFile = fopen("Icon.forged", "w");
+	FILE* outFile = fopen(outFileName, "w");
 	// Write out the header first
 	fwrite(resMap.data(), 1, 16, outFile);
 	// Skip the "system" reserved part

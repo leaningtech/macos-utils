@@ -383,17 +383,18 @@ public:
 
 int main(int argc, char* argv[])
 {
-	if(argc < 7 || ((argc - 7) % 3) != 0)
+	if(argc < 8 || ((argc - 8) % 3) != 0)
 	{
-		printf("Usage: %s bg.img bg_width bg_height volume_name icon_size text_size [file_name file_center_x file_center_y]+\n", argv[0]);
+		printf("Usage: %s output_file bg.img bg_width bg_height volume_name icon_size text_size [file_name file_center_x file_center_y]+\n", argv[0]);
 		return 1;
 	}
-	const char* bgFileName = argv[1];
-	const char* bgWidth = argv[2];
-	const char* bgHeight = argv[3];
-	const char* volumeName = argv[4];
-	const char* iconSize = argv[5];
-	const char* textSize = argv[6];
+	const char* outFileName = argv[1];
+	const char* bgFileName = argv[2];
+	const char* bgWidth = argv[3];
+	const char* bgHeight = argv[4];
+	const char* volumeName = argv[5];
+	const char* iconSize = argv[6];
+	const char* textSize = argv[7];
 	// Create the alias file first, we need to know the size to build the Btree
 	std::vector<uint8_t> aliasFile = createAliasFile(volumeName, bgFileName);
 	BuddyAllocator buddy;
@@ -424,7 +425,7 @@ int main(int argc, char* argv[])
 	bTree.addBlob(".", "icvo", ivData);
 	bTree.addShort(".", "icvt", getInt(textSize));
 	bTree.addBlob(".", "pict", aliasFile);
-	for(int i=7;i<argc;i+=3)
+	for(int i=8;i<argc;i+=3)
 	{
 		const char* fileName = argv[i];
 		uint32_t centerX = getInt(argv[i+1]);
@@ -439,7 +440,7 @@ int main(int argc, char* argv[])
 	}
 	uint32_t bTreeBlockId = bTree.finish();
 	buddy.createMetaDataBlock(bTreeBlockId);
-	FILE* outFile = fopen("DS_Store.forged", "w");
+	FILE* outFile = fopen(outFileName, "w");
 	buddy.writeFile(outFile);
 	fclose(outFile);
 	return 0;
