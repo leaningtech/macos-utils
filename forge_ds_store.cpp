@@ -258,6 +258,9 @@ std::vector<uint8_t> createAliasFile(const char* volumeName, const char* fileNam
 	uint32_t volumeNameLen = strlen(volumeName);
 	uint32_t fileNameLen = strlen(fileName);
 	uint32_t fullPathSize = volumeNameLen + fileNameLen + 1;
+	// We need to align the size to 2 (for the extra data)
+	if(fullPathSize & 1)
+		fullPathSize++;
 	uint32_t recordSize = sizeof(AliasFile) + 8 + fullPathSize;
 	std::vector<uint8_t> ret(recordSize, 0);
 	AliasFile* aliasFile = (AliasFile*)ret.data();
@@ -279,7 +282,6 @@ std::vector<uint8_t> createAliasFile(const char* volumeName, const char* fileNam
 	// 16-bit '2' (big endian) for for absolute path
 	extraData16[0] = htons(2);
 	extraData16[1] = htons(fullPathSize);
-	extraData[4] = fullPathSize;
 	memcpy(extraData + 4, volumeName, volumeNameLen);
 	extraData[4 + volumeNameLen] = ':';
 	memcpy(extraData + 5 + volumeNameLen, fileName, fileNameLen);
